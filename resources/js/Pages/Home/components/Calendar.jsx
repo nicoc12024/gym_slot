@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import useCalendar from "../useCalendar"; // Ajustar la ruta según sea necesario
-import useBookings from "../useBookings"; // Ajustar la ruta según sea necesario
+import useCalendar from "../useCalendar";
+import useBookings from "../useBookings";
 import WeekNavigator from "./WeekNavigator";
 import { usePage } from "@inertiajs/react";
 import Modal from "../../../Components/Modal";
 
 const Calendar = () => {
-    const { bookings, errors } = usePage().props; // Obtener reservas y errores de Inertia
+    const { bookings, errors } = usePage().props;
     const daysOfWeek = ["M", "T", "W", "T", "F", "S", "S"];
     const {
         currentWeekDays,
