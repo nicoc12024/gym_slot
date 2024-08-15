@@ -14,12 +14,34 @@ export default function Authenticated({ user, header, children }) {
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route("dashboard")}
-                                    active={route().current("dashboard")}
-                                >
-                                    Gym Slots
-                                </NavLink>
+                                {!user.is_admin && (
+                                    <NavLink
+                                        href={route("dashboard")}
+                                        active={route().current("dashboard")}
+                                    >
+                                        Gym Slots
+                                    </NavLink>
+                                )}
+                                {user.is_admin === 1 && (
+                                    <>
+                                        <NavLink
+                                            href={route("admin.dashboard")}
+                                            active={route().current(
+                                                "admin.dashboard"
+                                            )}
+                                        >
+                                            Gym Slots
+                                        </NavLink>
+                                    </>
+                                )}
+                                {user.is_admin === 1 && (
+                                    <NavLink
+                                        href={route("admin.users")}
+                                        active={route().current("admin.users")}
+                                    >
+                                        Users
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
@@ -118,12 +140,30 @@ export default function Authenticated({ user, header, children }) {
                     }
                 >
                     <div className="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink
-                            href={route("dashboard")}
-                            active={route().current("dashboard")}
-                        >
-                            Gym Slots
-                        </ResponsiveNavLink>
+                        {!user.is_admin && (
+                            <ResponsiveNavLink
+                                href={route("admin.dashboard")}
+                                active={route().current("admin.dashboard")}
+                            >
+                                Gym Slots
+                            </ResponsiveNavLink>
+                        )}
+                        {user.is_admin === 1 && (
+                            <ResponsiveNavLink
+                                href={route("admin.dashboard")}
+                                active={route().current("admin.dashboard")}
+                            >
+                                Gym Slots
+                            </ResponsiveNavLink>
+                        )}
+                        {user.is_admin === 1 && (
+                            <ResponsiveNavLink
+                                href={route("admin.users")}
+                                active={route().current("admin.users")}
+                            >
+                                Users
+                            </ResponsiveNavLink>
+                        )}
                     </div>
 
                     <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

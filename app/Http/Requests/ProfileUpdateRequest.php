@@ -15,9 +15,18 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->route('id') ?? $this->user()->id; // Obtiene el ID del usuario que se está actualizando
+
         return [
-            'name' => ['required', 'string', 'max:255', 'sometimes'],  
-            'email' => ['required', 'string', 'lowercase','sometimes', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'name' => ['sometimes', 'string', 'max:255'],  
+            'email' => [
+                'sometimes', 
+                'string', 
+                'lowercase',
+                'email', 
+                'max:255', 
+                Rule::unique(User::class)->ignore($userId), 
+            ],
             'email_notifications' => ['sometimes', 'boolean'],
         ];
     }

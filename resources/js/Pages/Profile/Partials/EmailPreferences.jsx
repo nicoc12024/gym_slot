@@ -1,21 +1,30 @@
 import React from "react";
 import { useForm, usePage } from "@inertiajs/react";
+import { Transition } from "@headlessui/react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import InputError from "@/Components/InputError";
 
-export default function EmailPreferences() {
-    const user = usePage().props.auth.user;
-    const { data, setData, patch, processing, errors } = useForm({
-        email_notifications: user.email_notifications,
-    });
+export default function EmailPreferences({ user }) {
+    const userLogged = usePage().props.auth.user;
+    const { data, setData, patch, processing, errors, recentlySuccessful } =
+        useForm({
+            email_notifications: user.email_notifications,
+        });
 
     const submit = (e) => {
         e.preventDefault();
 
-        patch(route("profile.update"), {
-            preserveScroll: true,
-        });
+        if (userLogged.is_admin === 1) {
+            patch(route("admin.users.update", user.id), {
+                preserveScroll: true,
+            });
+        } else {
+            patch(route("profile.update"), {
+                preserveScroll: true,
+            });
+        }
     };
+
     return (
         <section>
             <header>
@@ -53,6 +62,17 @@ export default function EmailPreferences() {
 
                 <div className="flex items-center gap-4">
                     <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    <Transition
+                        show={recentlySuccessful}
+                        enter="transition ease-in-out"
+                        enterFrom="opacity-0"
+                        leave="transition ease-in-out"
+                        leaveTo="opacity-0"
+                    >
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Saved.
+                        </p>
+                    </Transition>
                 </div>
             </form>
         </section>

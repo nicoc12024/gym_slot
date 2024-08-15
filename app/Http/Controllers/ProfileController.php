@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -17,10 +17,14 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request, $id = null): Response
     {
+        $user = $id ? User::findOrFail($id) : $request->user();
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'user' => $user, // Pasamos el usuario a la vista
+            'auth' => ['user' => $request->user()], // El usuario autenticado (administrador)
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
     }
@@ -28,11 +32,10 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, $id = null): RedirectResponse
     {
-        $user = $request->user();
+        $user = $id ? User::findOrFail($id) : $request->user();
 
-        // Convierte la request en un arreglo para poder actualizar los campos
         $user->fill($request->all());
 
         // Si el email ha cambiado, restablecer la verificación
@@ -42,7 +45,8 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        // Redirigir de vuelta al formulario de edición del mismo usuario que se está actualizando
+        return Redirect::route($id ? 'admin.users.edit' : 'profile.edit', $user->id)->with('status', 'profile-updated');
     }
 
     /**
