@@ -15,6 +15,17 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/admin/users', [AdminController::class, 'listUsers'])->name('admin.users');
     Route::get('/admin/users/{id}/edit', [ProfileController::class, 'edit'])->name('admin.users.edit');
     Route::patch('/admin/users/{id}', [ProfileController::class, 'update'])->name('admin.users.update');
+
+    Route::get('/admin/professors', [AdminController::class, 'listProfessors'])->name('admin.professors');
+    Route::get('/admin/lessons', [AdminController::class, 'listLessons'])->name('admin.lessons');
+    Route::post('/admin/lessons', [AdminController::class, 'storeLesson'])->name('admin.lessons.store');
+    Route::patch('/admin/lessons/{id}', [AdminController::class, 'updateLesson'])->name('admin.lessons.update');
+    Route::delete('/admin/lessons/{id}', [AdminController::class, 'destroyLesson'])->name('admin.lessons.destroy');
+
+    Route::post('/admin/professors', [AdminController::class, 'storeProfessor'])->name('admin.professors.store');
+    Route::patch('/admin/professors/{id}', [AdminController::class, 'updateProfessor'])->name('admin.professors.update');
+    Route::delete('/admin/professors/{id}', [AdminController::class, 'destroyProfessor'])->name('admin.professors.destroy');
+
 });
 
 

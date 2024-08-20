@@ -6,7 +6,8 @@ import { usePage } from "@inertiajs/react";
 import Modal from "../../../Components/Modal";
 
 const Calendar = () => {
-    const { bookings, errors } = usePage().props;
+    const { bookings, errors, auth } = usePage().props;
+    const is_admin = auth.user.is_admin;
     const daysOfWeek = ["M", "T", "W", "T", "F", "S", "S"];
     const {
         currentWeekDays,
@@ -33,6 +34,11 @@ const Calendar = () => {
     const [errorModalIsOpen, setErrorModalIsOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    // Estado para manejar el modal del admin
+    const [modalAdminBookSlot, setModalAdminBookSlot] = useState(false);
+    const [modalDate, setModalDate] = useState("");
+    const [modalHour, setModalHour] = useState("");
+
     useEffect(() => {
         if (errors.message) {
             setErrorMessage(errors.message);
@@ -45,15 +51,32 @@ const Calendar = () => {
         setErrorMessage("");
     };
 
+    const closeModalAdmin = () => {
+        setModalAdminBookSlot(false);
+        setModalDate("");
+        setModalHour("");
+    };
+
+    const openModalAdmin = (fullDate, hour) => {
+        setModalDate(fullDate);
+        setModalHour(hour);
+        setModalAdminBookSlot(true);
+    };
+
     const handleCellClick = (fullDate, hour, isPast, isBookedByUser) => {
         if (isPast) return;
 
-        if (isBookedByUser) {
-            openModal(fullDate, hour);
-            return;
+        if (is_admin) {
+            // Si es admin, abrir el modal para crear o editar un slot
+            openModalAdmin(fullDate, hour);
+        } else {
+            // Si no es admin, proceder con la reserva normal
+            if (isBookedByUser) {
+                openModal(fullDate, hour);
+            } else {
+                handleBookSlot(fullDate, hour);
+            }
         }
-
-        handleBookSlot(fullDate, hour);
     };
 
     return (
@@ -146,6 +169,29 @@ const Calendar = () => {
                     ))}
                 </tbody>
             </table>
+            <Modal
+                show={modalAdminBookSlot}
+                onClose={closeModalAdmin}
+                maxWidth="md"
+            >
+                <div className="p-6">
+                    <h2 className="text-lg font-medium">
+                        Book slot for {modalDate} at {modalHour}
+                    </h2>
+                    <h4>Choose lesson, professor and places available</h4>
+                    <div className="mt-4 flex justify-end">
+                        <button className="bg-red-500 text-white px-4 py-2 rounded-md mr-2">
+                            Confirm
+                        </button>
+                        <button
+                            className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                            onClick={closeModalAdmin}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </Modal>
             <Modal show={modalIsOpen} onClose={closeModal} maxWidth="md">
                 <div className="p-6">
                     <h2 className="text-lg font-medium">
